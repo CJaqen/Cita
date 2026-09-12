@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Mesa de los Dos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#231016;
+    --night-2:#2f1720;
+    --card:#341922;
+    --gold:#c8a25e;
+    --gold-soft:#e6cd97;
+    --blush:#f3e7da;
+    --muted:#c3a498;
+    --line:rgba(200,162,94,0.28);
+    --line-soft:rgba(200,162,94,0.14);
+    /* acento por defecto (se sobreescribe por carta) */
+    --acc:#c8a25e;
+    --acc-soft:#e6cd97;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    background:
+      radial-gradient(circle at 12% 2%, rgba(199,126,143,0.12) 0%, transparent 42%),
+      radial-gradient(circle at 88% 98%, rgba(209,160,79,0.12) 0%, transparent 46%),
+      radial-gradient(circle at 50% -10%, #3a1d27 0%, transparent 55%),
+      url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2226%22%20height%3D%2226%22%20viewBox%3D%220%200%2026%2026%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22rgba%28200%2C162%2C94%2C0.06%29%22/%3E%3C/svg%3E"),
+      var(--night);
+    background-attachment:fixed, fixed, fixed, fixed, fixed;
+    color:var(--blush);
+    font-family:'Karla',system-ui,sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+    padding:clamp(2rem,5vw,5rem) 1.25rem 5rem;
+  }
+
+  .wrap{max-width:1040px;margin:0 auto}
+
+  /* ---------- Encabezado ---------- */
+  .hero{text-align:center;margin-bottom:clamp(3rem,7vw,5.5rem)}
+
+  .hero .flourish{
+    color:var(--gold);
+    font-size:1.6rem;
+    letter-spacing:.5em;
+    margin-bottom:1.2rem;
+    opacity:.85;
+  }
+
+  .hero h1{
+    font-family:'Parisienne',cursive;
+    font-weight:400;
+    font-size:clamp(3.4rem,9vw,6rem);
+    line-height:1.05;
+    color:var(--gold-soft);
+  }
+
+  .hero .sub{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:clamp(1.15rem,3vw,1.55rem);
+    color:var(--muted);
+    margin-top:.9rem;
+  }
+
+  .hero .cities{
+    font-size:.9rem;
+    color:var(--muted);
+    margin-top:1.6rem;
+    letter-spacing:.04em;
+  }
+
+  .hero .cities .ciudad{
+    color:var(--gold-soft);
+    font-weight:700;
+  }
+
+  .invite{
+    max-width:34ch;
+    margin:clamp(2.6rem,6vw,4rem) auto 0;
+    text-align:center;
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(1.3rem,3.4vw,1.7rem);
+    line-height:1.35;
+    color:var(--blush);
+  }
+
+  /* ---------- Cartas cerradas ---------- */
+  .deck{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1.5rem;
+  }
+
+  .card{
+    position:relative;
+    background:
+      linear-gradient(160deg, var(--card) 0%, var(--night-2) 100%);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:3rem 1.5rem;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    cursor:pointer;
+    color:inherit;
+    font:inherit;
+    transition:transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:9px;
+    border:1px solid var(--acc);
+    opacity:.22;
+    border-radius:3px;
+    pointer-events:none;
+    transition:opacity .35s ease;
+  }
+
+  .card:hover,.card:focus-visible{
+    transform:translateY(-6px);
+    border-color:var(--acc);
+    box-shadow:0 18px 40px -20px rgba(0,0,0,.8), 0 0 34px -12px var(--acc);
+    outline:none;
+  }
+  .card:hover::before,.card:focus-visible::before{opacity:.55}
+
+  .card .mark{
+    color:var(--acc);
+    font-size:1.1rem;
+    letter-spacing:.4em;
+    margin-bottom:1.6rem;
+    opacity:.85;
+  }
+
+  .card .title{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(1.8rem,3.2vw,2.2rem);
+    line-height:1.2;
+    color:var(--acc-soft);
+  }
+
+  .card .open{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--muted);
+    margin-top:1.8rem;
+  }
+
+  /* ---------- Vista de detalle ---------- */
+  .detail-scrim{
+    position:fixed;
+    inset:0;
+    background:rgba(15,7,10,.82);
+    backdrop-filter:blur(3px);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:clamp(1rem,4vw,3rem) 1rem;
+    overflow-y:auto;
+    z-index:50;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .3s ease, visibility 0s linear .3s;
+  }
+  .detail-scrim.show{
+    opacity:1;
+    visibility:visible;
+    transition:opacity .3s ease, visibility 0s;
+  }
+
+  .detail{
+    outline:none;
+    background:
+      linear-gradient(170deg, var(--night-2) 0%, var(--night) 100%);
+    border:1px solid var(--acc);
+    border-radius:8px;
+    max-width:640px;
+    width:100%;
+    padding:clamp(2rem,5vw,3.2rem);
+    transform:scale(.92);
+    opacity:0;
+    transition:transform .4s cubic-bezier(.2,.8,.25,1), opacity .4s ease;
+  }
+  .detail-scrim.show .detail{transform:scale(1);opacity:1}
+
+  .detail .back{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Karla',sans-serif;
+    font-size:.9rem;
+    cursor:pointer;
+    padding:.3rem 0;
+    margin-bottom:1.8rem;
+    letter-spacing:.03em;
+  }
+  .detail .back:hover{color:var(--acc-soft)}
+
+  .detail .d-title{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(2.1rem,5vw,2.8rem);
+    line-height:1.15;
+    color:var(--acc-soft);
+    text-align:center;
+  }
+
+  .detail .message{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:clamp(1.2rem,3vw,1.45rem);
+    line-height:1.4;
+    color:var(--blush);
+    text-align:center;
+    max-width:40ch;
+    margin:1.2rem auto 0;
+  }
+
+  .rule{
+    width:56px;
+    height:1px;
+    background:var(--acc);
+    opacity:.7;
+    margin:2.4rem auto;
+    border:none;
+  }
+
+  .section-label{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.5rem;
+    color:var(--acc);
+    margin-bottom:1rem;
+  }
+
+  .lead{color:var(--muted);font-size:.95rem;margin-bottom:1rem}
+
+  /* Acordeón de recetas */
+  .recipe{
+    border-top:1px solid var(--line-soft);
+  }
+  .recipe:last-child{border-bottom:1px solid var(--line-soft)}
+
+  .recipe-head{
+    width:100%;
+    background:none;
+    border:none;
+    color:var(--blush);
+    font-family:'Karla',sans-serif;
+    text-align:left;
+    padding:1.1rem .3rem;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:1rem;
+  }
+  .recipe-head:hover .r-name{color:var(--acc-soft)}
+
+  .r-name{font-size:1.08rem;font-weight:500;transition:color .2s ease}
+  .r-time{font-size:.82rem;color:var(--muted);white-space:nowrap}
+  .r-plus{color:var(--acc);font-size:1.2rem;line-height:1;transition:transform .3s ease}
+  .recipe.open .r-plus{transform:rotate(45deg)}
+
+  .recipe-body{
+    display:grid;
+    grid-template-rows:0fr;
+    transition:grid-template-rows .35s ease;
+  }
+  .recipe.open .recipe-body{grid-template-rows:1fr}
+  .recipe-body>div{overflow:hidden}
+
+  .recipe-inner{padding:.2rem .3rem 1.6rem}
+
+  .recipe-foto{
+    width:100%;
+    aspect-ratio:16/10;
+    object-fit:cover;
+    border-radius:6px;
+    border:1px solid var(--line);
+    display:block;
+    margin:.4rem 0 .6rem;
+  }
+  .foto-empty{
+    width:100%;
+    aspect-ratio:16/10;
+    border:1px dashed var(--line);
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--muted);
+    font-style:italic;
+    font-size:.9rem;
+    margin:.4rem 0 .6rem;
+    background:rgba(0,0,0,.12);
+  }
+
+  .foto-duo{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.6rem;
+    margin:.4rem 0 .6rem;
+  }
+  .foto-duo .recipe-foto{
+    margin:0;
+    aspect-ratio:4/3;
+  }
+  @media(max-width:520px){
+    .foto-duo{grid-template-columns:1fr}
+  }
+
+  .mini-label{
+    color:var(--acc);
+    font-size:.8rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin:1rem 0 .5rem;
+  }
+  .recipe-inner ul{list-style:none;padding:0}
+  .recipe-inner ul li{
+    padding-left:1.1rem;position:relative;color:var(--blush);
+    font-size:.95rem;margin-bottom:.25rem;
+  }
+  .recipe-inner ul li::before{
+    content:"";position:absolute;left:0;top:.65em;
+    width:5px;height:5px;border-radius:50%;background:var(--acc);opacity:.8;
+  }
+  .recipe-inner ol{padding-left:1.2rem;color:var(--blush);font-size:.95rem}
+  .recipe-inner ol li{margin-bottom:.45rem;padding-left:.2rem}
+
+  .video-row{margin-top:1.3rem;display:flex;flex-wrap:wrap;gap:.6rem}
+  .video-link{
+    display:inline-block;
+    color:var(--night);
+    background:var(--acc);
+    text-decoration:none;
+    font-weight:700;
+    font-size:.9rem;
+    padding:.55rem 1.1rem;
+    border-radius:4px;
+    transition:background .2s ease;
+  }
+  .video-link:hover{background:var(--acc-soft)}
+  .video-empty{
+    display:inline-block;
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:.55rem 1.1rem;
+    font-size:.88rem;
+    font-style:italic;
+  }
+
+  /* Bloques finales */
+  .pair{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1.5rem 2rem;
+    margin-top:.5rem;
+  }
+  .pair .block p{color:var(--blush);font-size:.98rem}
+
+  @media(max-width:720px){
+    .deck{grid-template-columns:1fr;max-width:380px;margin:0 auto}
+    .card{min-height:200px;padding:2.4rem 1.5rem}
+    .pair{grid-template-columns:1fr;gap:1.6rem}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="hero">
+      <div class="flourish">✦</div>
+      <h1>La Mesa de los Dos</h1>
+      <p class="sub">Un restaurante que abre una sola noche, solo para nosotros.</p>
+      <p class="cities">Con una sede en <span class="ciudad">Medellín</span> y otra en <span class="ciudad">Montréal</span>.</p>
+    </header>
+
+    <main class="deck" id="deck"></main>
+
+    <p class="invite">Elige una carta, la que tú quieras.</p>
+
+  </div>
+
+  <!-- Vista de detalle -->
+  <div class="detail-scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <div class="detail" id="detail" tabindex="-1"></div>
+  </div>
+
+<script>
+/* ============================================================
+   CONTENIDO DE LAS CARTAS
+   Para agregar el video de cada receta, pega el link de
+   YouTube o TikTok entre las comillas de "video".
+   Ejemplo:  video: "https://www.youtube.com/watch?v=..."
+   ============================================================ */
+
+const CARTAS = [
+  {
+    titulo: "Como la primera vez",
+    mensaje: "Así, como en nuestra primera cita, cuando apostamos todo por nosotros, incluso a la distancia.",
+    acc: "#d9825e",       /* coral cálido */
+    accSoft: "#efb08a",
+    trago: "Margarita (o michelada, o agua de jamaica sin alcohol).",
+    ambiente: "Colores vivos, servilletas, salsas y limones en la mesa.",
+    dress: "Relajado y cómodo.",
+    recetas: [
+      {
+        nombre: "Tacos al pastor (versión fácil)",
+        tiempo: "30 min + marinado",
+        video: "https://www.tiktok.com/@beatrizcontreras31/video/7610237920422776095?_r=1&_t=ZS-99R2eYpXMzC",
+        foto: "img/tacos-al-pastor-version-facil.jpg",
+        ingredientes: [
+          "250 g de cerdo en filetes delgados",
+          "2 chiles guajillo (o chile guaje), sin semillas para que no piquen tanto",
+          "2 chiles anchos (o chile pasa), sin semillas para que no piquen tanto",
+          "1 diente de ajo",
+          "¼ de cebolla",
+          "Aceite",
+          "1 cdita de achiote",
+          "Orégano, pimienta, comino y sal al gusto",
+          "3 clavos de olor",
+          "1 taza de piña (parte para el marinado, parte en cubos para servir)",
+          "½ taza de vinagre blanco",
+          "Tortillas, cebolla picada y cilantro para armar"
+        ],
+        pasos: [
+          "Abre los chiles y quítales las semillas para que no piquen tanto.",
+          "Cocina los chiles en un poco de aceite con el ajo y la cebolla, luego agrega un poco de agua y deja que ablanden.",
+          "Licúa los chiles con el ajo, la cebolla, el achiote, el orégano, la pimienta, el comino, la sal, los clavos de olor, la piña y el vinagre blanco. Ese es el marinado.",
+          "Baña la carne con el marinado y déjala reposar (mínimo 30 min, mejor si es más).",
+          "Cocina la carne en sartén caliente hasta que esté lista.",
+          "Calienta las tortillas y arma los tacos con piña en cubos, cebolla y cilantro."
+        ]
+      },
+      {
+        nombre: "Fajitas de pollo y res",
+        tiempo: "25 min",
+        video: "https://www.tiktok.com/@blankisespinoza10/video/7558875240135281928?_r=1&_t=ZS-99R2plyKjx9",
+        foto: "img/fajitas-de-pollo-y-res.jpg",
+        ingredientes: [
+          "125 g de pollo",
+          "125 g de res",
+          "½ pimentón",
+          "½ cebolla",
+          "Comino, ajo, sal, pimienta",
+          "Cebolla en polvo",
+          "Paprika",
+          "Salsa de soya",
+          "Un chorrito de jugo de limón",
+          "Tortillas",
+          "Guacamole para acompañar"
+        ],
+        pasos: [
+          "Corta el pollo y la res en tiras.",
+          "Sazona con comino, ajo, sal, pimienta, cebolla en polvo y paprika.",
+          "Saltea la carne con el pimentón y la cebolla en tiras.",
+          "Agrega un poco de salsa de soya y un chorrito de jugo de limón.",
+          "Sirve con tortillas y guacamole para armar en la mesa."
+        ]
+      },
+      {
+        nombre: "Quesadillas o nachos cargados",
+        tiempo: "20 min",
+        videos: [
+          { etiqueta: "Quesadillas", url: "https://www.tiktok.com/@beatrizcontreras31/video/7583064769062505758?_r=1&_t=ZS-99R3BCUi5FI" },
+          { etiqueta: "Nachos", url: "https://www.tiktok.com/@tehindu_/video/7654669037871451412?_r=1&_t=ZS-99Tp4ARvn0c" }
+        ],
+        foto: [
+          "img/quesadillas-o-nachos-cargados.jpg",
+          "img/quesadillas-o-nachos-cargados-2.jpg"
+        ],
+        ingredientes: [
+          "Quesadillas: tortillas, queso rallado, carne o pollo",
+          "Quesadillas: sal, sal de ajo, pimienta, orégano",
+          "Quesadillas: guacamole",
+          "Quesadillas: ingredientes para pico de gallo (tomate, cebolla, cilantro, limón)",
+          "Nachos: carne molida y/o pollo desmechado con los condimentos que elijas",
+          "Nachos: nachos (totopos), queso mozzarella, frijol refrito",
+          "Nachos: sour cream, guacamole",
+          "Nachos: ingredientes para pico de gallo (tomate, cebolla, cilantro, limón)"
+        ],
+        pasos: [
+          "Quesadillas: rellena la tortilla con queso y el relleno, dora en sartén hasta que derrita.",
+          "Nachos: capa de totopos, queso, carne y frijoles; al horno hasta gratinar.",
+          "Encima de los nachos: guacamole y crema."
+        ]
+      }
+    ]
+  },
+  {
+    titulo: "El ahora que nos espera",
+    mensaje: "Así, como seguiremos, descubriendo lugares nuevos y haciéndolos nuestros.",
+    acc: "#d1a04f",       /* ámbar dorado */
+    accSoft: "#e8c47e",
+    trago: "Cerveza (o Whiskey Sour, o root beer sin alcohol).",
+    ambiente: "Luz cálida, servilletas, salsas para mojar, ambiente cómodo.",
+    dress: "Cómodo, ropa de estar en casa rico.",
+    recetas: [
+      {
+        nombre: "Pizza o alitas en salsa de miel y ajo",
+        tiempo: "Pizza 20 min / alitas 55 min",
+        videos: [
+          { etiqueta: "Pizza", url: "https://www.tiktok.com/@dalvarezg_/video/7533739432743079182?_r=1&_t=ZS-99TppEa18g3" },
+          { etiqueta: "Alitas", url: "https://www.tiktok.com/@masvidafitcol/video/7652488663368092948?_r=1&_t=ZS-99R3nHT1iKN" }
+        ],
+        foto: [
+          "img/pizza-o-alitas-en-salsa-de-miel-y-ajo.jpg",
+          "img/pizza-o-alitas-en-salsa-de-miel-y-ajo-2.jpg"
+        ],
+        ingredientes: [
+          "Pizza: 1 base de pizza prehecha, salsa de tomate, queso mozzarella, albahaca fresca, toppings al gusto",
+          "Alitas: 250 g de alitas, sal, pimienta, aceite, salsa BBQ"
+        ],
+        pasos: [
+          "Pizza: unta la salsa de tomate en la base, agrega mozzarella y los toppings, hornea a 220°C por 10 a 12 min y termina con albahaca fresca.",
+          "Alitas: seca bien las alitas y sazona con sal, pimienta y aceite.",
+          "Alitas: hornea a 200°C por 40 a 45 min volteando a la mitad.",
+          "Alitas: báñalas en salsa BBQ y regresa 5 min al horno."
+        ]
+      },
+      {
+        nombre: "Costillas de cerdo BBQ al horno",
+        tiempo: "2 h 15 min (casi todo horno)",
+        video: "https://www.tiktok.com/@jorgito_resuelve/video/7662528378058181909?_r=1&_t=ZS-99TsnsVbNtS",
+        foto: "img/costillas-de-cerdo-bbq-al-horno.jpg",
+        ingredientes: [
+          "250 g de costillas de cerdo",
+          "Sal, pimienta",
+          "Especias al gusto",
+          "Salsa BBQ"
+        ],
+        pasos: [
+          "Sazona las costillas.",
+          "Envuelve en aluminio y hornea a 160°C por 2 horas.",
+          "Destapa, unta salsa BBQ y sube a 200°C por 15 min hasta caramelizar."
+        ]
+      },
+      {
+        nombre: "Hamburguesa casera gourmet",
+        tiempo: "20 min",
+        video: "",
+        foto: "img/hamburguesa-casera-gourmet.jpg",
+        ingredientes: [
+          "250 g de carne molida",
+          "Sal, pimienta",
+          "1 pan de hamburguesa",
+          "Queso",
+          "Lechuga, tomate, cebolla",
+          "Salsas al gusto"
+        ],
+        pasos: [
+          "Forma un medallón con la carne, sal y pimienta.",
+          "Sella en sartén 3 a 4 min por lado y pon el queso al final.",
+          "Arma con el pan y los vegetales."
+        ]
+      }
+    ]
+  },
+  {
+    titulo: "Como siempre seremos",
+    mensaje: "Así, presentes, cuando vernos deje de ser un plan y sea nuestra realidad.",
+    acc: "#c77e8f",       /* rosa vino */
+    accSoft: "#e2a9b4",
+    trago: "Vino tinto de cuerpo medio (o Aperol Spritz de aperitivo).",
+    ambiente: "Mantel, velas, la mejor vajilla, una vela o flor en la mesa.",
+    dress: "Elegante, de salir a cenar.",
+    recetas: [
+      {
+        nombre: "Solomillo con pasta en salsa cremosa de parmesano",
+        tiempo: "30 min",
+        video: "https://www.tiktok.com/@nicolagrahamg/video/7411323415950363909?_r=1&_t=ZS-99R4XCNDp1r",
+        foto: "img/solomillo-con-pasta-en-salsa-cremosa-de-parmesano.jpg",
+        ingredientes: [
+          "250 g de solomillo (1 medallón grueso)",
+          "Sal y pimienta",
+          "Sal de ajo",
+          "Ajo",
+          "Mostaza Dijon",
+          "100 g de fetuccini",
+          "1 cda de mantequilla",
+          "100 ml de crema de leche",
+          "Vino blanco",
+          "3 cdas de parmesano rallado",
+          "Queso feta"
+        ],
+        pasos: [
+          "Sella el solomillo salpimentado 3 a 4 min por lado y deja reposar.",
+          "Cocina la pasta.",
+          "Para la salsa: derrite mantequilla, agrega crema y parmesano, revuelve hasta espesar.",
+          "Mezcla la pasta con la salsa y sirve el solomillo al lado."
+        ]
+      },
+      {
+        nombre: "Lasaña al horno",
+        tiempo: "1 h 20 min (35 min de horno)",
+        video: "https://www.tiktok.com/@tuliorecomiendaoficial/video/7607619835475873031?_r=1&_t=ZS-99Ts7DNeuzS",
+        foto: "img/lasana-al-horno.jpg",
+        ingredientes: [
+          "4 láminas de lasaña precocidas",
+          "250 g de carne molida",
+          "½ cebolla picada",
+          "1 diente de ajo picado",
+          "250 g de salsa de tomate",
+          "Sal, pimienta y orégano",
+          "½ taza de salsa bechamel comprada (no hay que hacerla)",
+          "100 g de queso mozzarella rallado",
+          "Queso parmesano rallado para gratinar",
+          "Aceite de oliva"
+        ],
+        pasos: [
+          "Sofríe la cebolla y el ajo en un poco de aceite de oliva hasta que estén transparentes.",
+          "Agrega la carne molida, salpimienta y cocina hasta que dore.",
+          "Añade la salsa de tomate y el orégano, y deja reducir 15 min a fuego bajo.",
+          "En un molde pequeño arma las capas: bechamel, láminas, carne, mozzarella. Repite hasta llenar.",
+          "Termina con bechamel, mozzarella y parmesano por encima.",
+          "Hornea a 180°C por 35 min, tapado con aluminio los primeros 20.",
+          "Deja reposar 10 min antes de servir, para que corte bien."
+        ]
+      },
+      {
+        nombre: "Pollo alla Marsala con pasta",
+        tiempo: "30 min",
+        video: "https://www.tiktok.com/@foodcreationsforyou/video/7343700270095846699?_r=1&_t=ZS-99TqAzNboP9",
+        foto: "img/pollo-alla-marsala-con-pasta.jpg",
+        ingredientes: [
+          "250 g de pechuga en filetes",
+          "Sal, pimienta",
+          "100 g de champiñones",
+          "50 ml de vino Marsala (o vino tinto)",
+          "50 ml de crema de leche",
+          "100 g de pasta"
+        ],
+        pasos: [
+          "Dora la pechuga salpimentada y retira.",
+          "Saltea los champiñones, agrega el vino y la crema, deja reducir.",
+          "Regresa el pollo y sirve con pasta al lado."
+        ]
+      }
+    ]
+  }
+];
+
+/* ============================================================
+   Render
+   ============================================================ */
+
+const deck = document.getElementById('deck');
+const scrim = document.getElementById('scrim');
+const detail = document.getElementById('detail');
+
+CARTAS.forEach((carta, i) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'card';
+  btn.style.setProperty('--acc', carta.acc);
+  btn.style.setProperty('--acc-soft', carta.accSoft);
+  btn.innerHTML = `
+    <span class="mark">✦</span>
+    <span class="title">${carta.titulo}</span>
+    <span class="open">Ábreme</span>
+  `;
+  btn.addEventListener('click', () => abrir(i));
+  deck.appendChild(btn);
+});
+
+let ultimoFoco = null;
+
+function abrir(i){
+  const c = CARTAS[i];
+  ultimoFoco = document.activeElement;
+
+  detail.style.setProperty('--acc', c.acc);
+  detail.style.setProperty('--acc-soft', c.accSoft);
+
+  const recetasHTML = c.recetas.map((r, idx) => {
+    const ing = r.ingredientes.map(x => `<li>${x}</li>`).join('');
+    const pas = r.pasos.map(x => `<li>${x}</li>`).join('');
+    let video;
+    if (Array.isArray(r.videos)) {
+      video = r.videos.map(v => `<a class="video-link" href="${v.url}" target="_blank" rel="noopener">Ver video: ${v.etiqueta} ▸</a>`).join(' ');
+    } else if (r.video) {
+      video = `<a class="video-link" href="${r.video}" target="_blank" rel="noopener">Ver video ▸</a>`;
+    } else {
+      video = '';
+    }
+    const foto = Array.isArray(r.foto)
+      ? `<div class="foto-duo">${r.foto.map((src, j) => `<img class="recipe-foto" src="${src}" alt="${r.nombre} (${j+1} de ${r.foto.length})" loading="lazy">`).join('')}</div>`
+      : (r.foto
+        ? `<img class="recipe-foto" src="${r.foto}" alt="${r.nombre}" loading="lazy">`
+        : `<div class="foto-empty">Foto por agregar</div>`);
+    return `
+      <div class="recipe" data-r="${idx}">
+        <button type="button" class="recipe-head" aria-expanded="false" onclick="toggleReceta(${idx})">
+          <span class="r-name">${r.nombre}</span>
+          <span style="display:flex;gap:.9rem;align-items:baseline">
+            <span class="r-time">${r.tiempo}</span>
+            <span class="r-plus">+</span>
+          </span>
+        </button>
+        <div class="recipe-body"><div>
+          <div class="recipe-inner">
+            ${foto}
+            <div class="mini-label">Ingredientes (1 persona)</div>
+            <ul>${ing}</ul>
+            <div class="mini-label">Preparación</div>
+            <ol>${pas}</ol>
+            ${video ? `<div class="video-row">${video}</div>` : ''}
+          </div>
+        </div></div>
+      </div>`;
+  }).join('');
+
+  detail.innerHTML = `
+    <button type="button" class="back" onclick="cerrar()">← Volver a las cartas</button>
+    <h2 class="d-title" id="d-title">${c.titulo}</h2>
+    <p class="message">${c.mensaje}</p>
+    <hr class="rule">
+
+    <div class="section-label">Esta noche cocinamos</div>
+    <p class="lead">Elijamos juntos una de las tres y vemos qué trae.</p>
+    ${recetasHTML}
+
+    <hr class="rule">
+    <div class="pair">
+      <div class="block">
+        <div class="section-label">Para brindar</div>
+        <p>${c.trago}</p>
+      </div>
+      <div class="block">
+        <div class="section-label">Código de vestuario</div>
+        <p>${c.dress}</p>
+      </div>
+      <div class="block" style="grid-column:1/-1">
+        <div class="section-label">Para ambientar</div>
+        <p>${c.ambiente}</p>
+      </div>
+    </div>
+  `;
+
+  scrim.classList.add('show');
+  scrim.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  detail.focus();
+}
+
+function toggleReceta(idx){
+  const el = detail.querySelector(`.recipe[data-r="${idx}"]`);
+  const abierta = el.classList.toggle('open');
+  el.querySelector('.recipe-head').setAttribute('aria-expanded', abierta);
+}
+
+function cerrar(){
+  if(!scrim.classList.contains('show')) return;
+  scrim.classList.remove('show');
+  document.body.style.overflow = '';
+  if(ultimoFoco) ultimoFoco.focus();
+}
+
+scrim.addEventListener('click', e => { if(e.target === scrim) cerrar(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') cerrar(); });
+</script>
+</body>
+</html>
